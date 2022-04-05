@@ -39,7 +39,7 @@ byte LEDs[4] = {};
 
 void setup() {
   Serial.begin(9600);
-  for(int i = 2; i < 6; i++ )
+  for(int i = LED1; i <= LED4; i++ )
     pinMode(i, OUTPUT);
 }
 
