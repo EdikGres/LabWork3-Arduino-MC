@@ -11,6 +11,7 @@
  */
 //#define DEBUG
 #define DIFF_A 14
+#define DIFF_LED 2
 #define DELAY 1000
 #define LED1 2
 #define LED2 3
@@ -137,41 +138,15 @@ void filter(void) {
 void checkLED(void) {
   filter();
   //A4>A2
-  if(Filtered[4] > Filtered[2]) {
-    digitalWrite(LED1, HIGH);
-    LEDs[0] = 1;
-  }
-  else {
-    digitalWrite(LED1, LOW);
-    LEDs[0] = 0;
-  }
+  LEDs[0] = (Filtered[4] > Filtered[2]) ? 1 : 0;
   //A2<A4+0.7В
-  if(Filtered[2] < (Filtered[4] + 0.7)) {
-    digitalWrite(LED2, HIGH);
-    LEDs[1] = 1;
-  }
-  else {
-    digitalWrite(LED2, LOW);
-    LEDs[1] = 0;
-  }
+  LEDs[1] = (Filtered[2] < (Filtered[4] + 0.7)) ? 1 : 0;
   //A0>A2+A3
-  if(Filtered[0] > (Filtered[2] + Filtered[3])) {
-    digitalWrite(LED3, HIGH);
-    LEDs[2] = 1;
-  }
-  else {
-    digitalWrite(LED3, LOW);
-    LEDs[2] = 0;
-  }
+  LEDs[2] = (Filtered[0] > (Filtered[2] + Filtered[3])) ? 1 : 0;
   //A0<A3
-  if(Filtered[0] < Filtered[3]) {
-    digitalWrite(LED4, HIGH);
-    LEDs[3] = 1;
-  }
-  else {
-    digitalWrite(LED4, LOW);
-    LEDs[3] = 0;
-  }
+  LEDs[3] = (Filtered[0] < Filtered[3]) ? 1 : 0;
+  for(int i = LED1; i <= LED4; i++)
+    digitalWrite(i, LEDs[i-DIFF_LED]);
 }
 
 //бегущее среднее
