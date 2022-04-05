@@ -11,6 +11,7 @@
  */
 //#define DEBUG
 #define DIFF_A 14
+#define DELAY 1000
 #define LED1 2
 #define LED2 3
 #define LED3 4
@@ -33,6 +34,7 @@ float k = 0.1;  // коэффициент фильтрации, 0.0-1.0
 unsigned int Apins[6] = {};
 float Avolts[6] = {};
 float Filtered[5] = {};
+byte LEDs[4] = {};
 
 void setup() {
   Serial.begin(9600);
@@ -52,7 +54,7 @@ void loop() {
     f_print();
 #endif
     _print();
-    delay(1000);
+    delay(DELAY);
 }
 #ifdef DEBUG
 void a_print(void) {
@@ -98,7 +100,8 @@ void f_print(void) {
 void _print(void) {
   Serial.print("VALUE\t");
   Serial.print("VOLTS\t");
-  Serial.print("FILTERED\t\n");
+  Serial.print("FILTERED\t");
+  Serial.print("LED\t\n");
   for(int i = 0; i < 6; i++) {
     Serial.print(Apins[i]);
     Serial.print("\t");
@@ -108,6 +111,10 @@ void _print(void) {
 
     if(i < 5){
       Serial.print(Filtered[i]);
+      Serial.print("\t\t");
+    }
+    if(i < 4) {
+      Serial.print(LEDs[i]);
       Serial.print("\t");
     }
     Serial.print("\n");
@@ -130,25 +137,41 @@ void filter(void) {
 void checkLED(void) {
   filter();
   //A4>A2
-  if(Filtered[4] > Filtered[2])
+  if(Filtered[4] > Filtered[2]) {
     digitalWrite(LED1, HIGH);
-  else
+    LEDs[0] = 1;
+  }
+  else {
     digitalWrite(LED1, LOW);
+    LEDs[0] = 0;
+  }
   //A2<A4+0.7В
-  if(Filtered[2] < (Filtered[4] + 0.7))
+  if(Filtered[2] < (Filtered[4] + 0.7)) {
     digitalWrite(LED2, HIGH);
-  else
+    LEDs[1] = 1;
+  }
+  else {
     digitalWrite(LED2, LOW);
+    LEDs[1] = 0;
+  }
   //A0>A2+A3
-  if(Filtered[0] > (Filtered[2] + Filtered[3]))
+  if(Filtered[0] > (Filtered[2] + Filtered[3])) {
     digitalWrite(LED3, HIGH);
-  else
+    LEDs[2] = 1;
+  }
+  else {
     digitalWrite(LED3, LOW);
+    LEDs[2] = 0;
+  }
   //A0<A3
-  if(Filtered[0] < Filtered[3])
+  if(Filtered[0] < Filtered[3]) {
     digitalWrite(LED4, HIGH);
-  else
+    LEDs[3] = 1;
+  }
+  else {
     digitalWrite(LED4, LOW);
+    LEDs[3] = 0;
+  }
 }
 
 //бегущее среднее
